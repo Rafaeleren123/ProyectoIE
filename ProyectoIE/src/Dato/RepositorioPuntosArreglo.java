@@ -1,5 +1,6 @@
-package Dato;
+    package Dato;
 
+import Logica.Excepciones.RepositorioLlenoException;
 import Logica.PuntoInteres;
 
 public class RepositorioPuntosArreglo implements RepositorioPuntosInteres{
@@ -19,7 +20,11 @@ public class RepositorioPuntosArreglo implements RepositorioPuntosInteres{
      * Agrega un objeto de tipo PuntoInteres
      */
     @Override
-    public void agregar(PuntoInteres punto) {
+    public void agregar(PuntoInteres punto) throws RepositorioLlenoException{
+        if(estaLleno()){
+            throw new RepositorioLlenoException("No queda espacio.");
+        }
+        
         this.punto[contador] = punto;
         contador++; // incrementa la posicion
     }

@@ -1,34 +1,31 @@
-package Logica;
+    package Logica;
 
+import Logica.Excepciones.DatoInvalidoException;
 import Utilidades.*;
 
 public class PuestoServicio extends PuntoInteres{
-    private final String[] categoriaVal = {"Cascada", "Laguna", "Bosque", "Formacion rocosa"};
+    private final String[] tipoServicioVal = {
+        "Guardaparques", 
+        "Primeros auxilios", 
+        "Información al visitante"
+    };
     
-    private int categoria;
+    private int tipoServicio;
     
     public PuestoServicio(){
-        categoria = 0;
+        super();
+        tipoServicio = 0;
     }
     
     
     // ============================================= Metodos Publicos ============================================= //
     
-    
-    @Override
-    public void cargarDato(int codigo) throws DatoInvalidoException{
-        Consola.emitirTitulo(3, 40, "=", "Puesto de servicio");
-        super.cargarDato(codigo);
-        leerCategoria();
-        
-        Consola.emitirBordeLN(40,"=");
-    }
 
     @Override
     public void mostrarInformacion() {
         Consola.emitirTitulo(3, 40, "-", "Puesto de servicio");
         super.mostrarDatoComunes();
-        Consola.emitirMensajeLN("| categoria: "+categoriaVal[categoria]+" |");
+        Consola.emitirMensajeLN("| tipoServicio: "+tipoServicioVal[tipoServicio]+" |");
         
         Consola.emitirBordeLN(40, "-");
     }
@@ -39,45 +36,28 @@ public class PuestoServicio extends PuntoInteres{
     }
     
     
-    // ============================================= Metodos Privado ============================================= //
-    
-
-    private void leerCategoria() throws DatoInvalidoException{
-        int opc;
-        boolean opcValido;
-        
-        Consola.emitirMensajeLN("Tipo de categoria:");
-        Consola.emitirLista(categoriaVal);
-        
-        Consola.emitirMensaje("Respuesta: ");
-        opc = Lector.leerInt();
-        
-        opcValido = Validador.esNroValido(opc, 1, categoriaVal.length);
-        
-        if(!opcValido){
-            throw new DatoInvalidoException("Opcion de categoria no valida.");
-        }
-        
-        setCategoria(opc-1);
-    }
-    
-    
     // ============================================= Getter ============================================= //
 
     
-    public String[] getCategoriaVal() {
-        return categoriaVal;
+    public String[] getTipoServVal() {
+        return tipoServicioVal;
     }
     
-    public int getCategoria() {
-        return categoria;
+    public int getTipoServicio() {
+        return tipoServicio;
     }
 
     
     // ============================================= Setter ============================================= //
     
     
-    private void setCategoria(int categoria) {
-        this.categoria = categoria;
+    public void setTipoServicio(int tipoServicio) throws DatoInvalidoException{
+        boolean opcValido = Validador.esNroValido(tipoServicio, 1, tipoServicioVal.length);
+        
+        if(!opcValido){
+            throw new DatoInvalidoException("Opcion de tipoServicio no valida.");
+        }
+        
+        this.tipoServicio = tipoServicio;
     }
 }

@@ -1,13 +1,10 @@
 package presentacion;
 
-import Logica.CodigoDuplicadoException;
 import Logica.CreadorPuntoInteres;
-import Logica.DatoInvalidoException;
-import Logica.GestorPuntosInteres;
+import Logica.Gestor.GestorPuntosInteres;
 import Logica.PuntoInteres;
-import Logica.RepositorioLlenoException;
-import Logica.Menu;
-import Logica.RepositorioVacioException;
+import Logica.Excepciones.*;
+import Logica.Gestor.GestorArbol;
 import Utilidades.*;
 
 /**
@@ -19,18 +16,36 @@ import Utilidades.*;
  */
 
 public class AppIE {
-    private MenuEcuRoute mEcuRoute;
-    private Menu mTipoPuntoInt;
-    private GestorPuntosInteres gestor;
+    // Tipo de menu
+    private MenuEcuRoute mEcuRoute; // Menu principal
+    private Menu mCargar; // Menu que muestrar las opciones de carga
+    private Menu mMostrar; // Menu que muestra las opciones de mostrar
+    private Menu mBuscar; // Menu que muestra las opciones de busqueda
+    private Menu mEliminar; // Menu que muestra las opciones de eliminar
+    private Menu mTipoPuntoInt; // Menu que muestra los tipos de Punto de interes
+    
+    // Tipo de gestores
+    private GestorPuntosInteres gestorPInteres; 
+    private GestorArbol gestorArbol;
     
     public AppIE() {
-        this.mEcuRoute = new MenuEcuRoute();
-        this.mTipoPuntoInt = new Menu(3);
-        this.gestor = new GestorPuntosInteres();
+        mEcuRoute = new MenuEcuRoute();
+        mCargar = new Menu(3);
+        mMostrar = new Menu(8);
+        mBuscar = new Menu(3);
+        mEliminar = new Menu(2);
+        mTipoPuntoInt = new Menu(3);
+        
+        
+        gestorPInteres = new GestorPuntosInteres();
+        gestorArbol = new GestorArbol();
     }
     
     
-    // ============================================= Metodos Publicos ============================================= //
+    // ============================================================================================================ //
+    // ============================================  Metodo Principal  ============================================ //
+    // ============================================================================================================ //
+    
     
     /**
      * Metodo principal
@@ -44,98 +59,208 @@ public class AppIE {
         do{
             opc = mEcuRoute.ejecutar();
             procesarOpc(opc);
-        }while(opc != 8);
+        }while(opc != mEcuRoute.getCantOpc());
         
     }
     
     
-    // ============================================= Metodos Privados ============================================= //
+    // ============================================================================================================ //
+    // =====================================  Metodos para Procesar opciones  ===================================== //
+    // ============================================================================================================ //
     
     
     private void procesarOpc(int opc){
+        int opc2;
+        switch(opc){
+            case 1:
+                do{
+                    opc2 = mCargar.ejecutar();
+                    procesarCarga(opc2);
+                }while(opc2 != mCargar.getCantOpciones());
+                
+                break;
+                
+            case 2:
+                do{
+                    opc2 = mMostrar.ejecutar();
+                    procesarMostrar(opc2);
+                }while(opc2 != mMostrar.getCantOpciones());
+                
+                break;
+                
+            case 3:
+                do{
+                    opc2 = mBuscar.ejecutar();
+                    procesarBusqueda(opc2);
+                }while(opc2 != mBuscar.getCantOpciones());
+                
+                break;
+                
+            case 4:
+                do{
+                    opc2 = mEliminar.ejecutar();
+                    procesarEliminacion(opc2);
+                }while(opc2 != mEliminar.getCantOpciones());
+                
+                break;
+                
+            case 5:
+                Consola.emitirMensajeLN("Cerrando programa ...");
+                break;
+        }
+    }
+    
+    private void procesarCarga(int opc){
         switch(opc){
             case 1:
                 altaPuntoInteres();
                 break;
                 
             case 2:
-                mostrarPuntosInteres();
+                crearIndice();
                 break;
                 
             case 3:
-                buscarPuntoInteres();
+                Consola.emitirMensajeLN("Volviendo al menu principal.");
+                break;
+        }
+    }
+    
+    private void procesarMostrar(int opc){
+        switch(opc){
+            case 1:
+                mostrarPuntosInteres();
                 break;
                 
-            case 4:
+            case 2:
                 contarPorTipo();
                 break;
                 
-            case 5:
+            case 3:
                 mostrarMayorAltitud();
                 break;
                 
-            case 6:
+            case 4:
                 mostrarPromedioAltitud();
                 break;
                 
-            case 7:
+            case 5:
                 mostrarAccesibilidadAlta();
                 break;
                 
+            case 6:
+                mostrarAscendente();
+                break;
+                
+            case 7:
+                estadisticasArbol();
+                break;
+                
             case 8:
-                Consola.emitirMensajeLN("Cerrando programa ...");
+                Consola.emitirMensajeLN("Volviendo al menu principal.");
                 break;
         }
     }
     
+    private void procesarBusqueda(int opc){
+        switch(opc){
+            case 1:
+                buscarPuntoInteres();
+                break;
+                
+            case 2:
+                buscarPorIndice();
+                break;
+                
+            case 3:
+                Consola.emitirMensajeLN("Volviendo al menu principal.");
+                break;
+        }
+    }
+    
+    private void procesarEliminacion(int opc){
+        switch(opc){
+            case 1:
+                eliminarIndice();
+                break;
+                
+            case 2:
+                Consola.emitirMensajeLN("Volviendo al menu principal.");
+                break;
+        }
+    }
+    
+    
+    // =============================================================================================================== //
+    // ============================================  Metodos para cargar  ============================================ //
+    // =============================================================================================================== //
+    
+    
     private void cargarMenu(){
+        String[] opciones;
+
         //carga el munu principal
         mEcuRoute.cargar();
         
-        //carga el menu que tendra los tipo de punto de interes
-        String[] opciones = {"Mirador", "Recurso natural", "Puesto servicio"};
+        // mCargar
+        opciones = new String[] {
+            "cargar", 
+            "Restaurar (arbol)",
+            "Volver"
+        };
+        mCargar.cargarDato("Opciones de cargar P. I.", opciones);
+        
+        // mMostrar
+        opciones = new String[] {
+            "Todo", 
+            "Cantidad de un tipo de P.I.", 
+            "Mayor altitud", 
+            "Promedio de altitud", 
+            "P.I. con accesibilidad alta",
+            "Menor a mayor codigo(Por arbol)",
+            "Estadisticas (del arbol)",
+            "Volver"
+        };
+        mMostrar.cargarDato("Opciones de mostrar P. I.", opciones);
+        
+        // mBuscar
+        opciones = new String[] {
+            "Normal",
+            "Rapida (Por arbol)",
+            "Volver"
+        };
+        mBuscar.cargarDato("Opciones de Buscar P. I.", opciones);
+        
+        // mEliminar
+        opciones = new String[] {
+            "Rapida (Solo para el arbol)",
+            "Volver"
+        };
+        mEliminar.cargarDato("Opciones de eliminar P. I.", opciones);
+        
+        // mTipoPuntoInt
+        opciones = new String[] {"Mirador", "Recurso natural", "Puesto servicio"};
         mTipoPuntoInt.cargarDato("Tipo de Punto de interes", opciones);
-    }
-    
-    private int leerCodigo() throws DatoInvalidoException{
-        int codigo;
-        boolean codigoValido;
-        
-        Consola.emitirBordeLN(40, "=");
-        Consola.emitirMensaje("Ingrese codigo: ");
-        codigo = Lector.leerInt();
-        
-        Consola.emitirBordeLN(40, "=");
-        
-        codigoValido = Validador.esNroPositivo(codigo);
-        
-        if(!codigoValido){
-            throw new DatoInvalidoException("El codigo no puede ser negativo.");
-        }
-        
-        return codigo;
     }
     
     private void altaPuntoInteres(){
         try{
-            gestor.estaLleno(); // lanza una excepcion si esta llena
-            
-            PuntoInteres p;
-            int tipoPuntInteres; // guarda el tipo de punto de interes que selecciona el usuario
+            int tipoPInteres; // guarda el tipo de punto de interes que selecciona el usuario
             boolean objCargado = false; // variable que indica si se cargo bien el objeto
 
             Consola.emitirTitulo(3, 30, "=", "Alta de Punto Interes");
 
-            tipoPuntInteres = mTipoPuntoInt.ejecutar();
-            p = CreadorPuntoInteres.getTipoPInteres(tipoPuntInteres);
+            tipoPInteres = mTipoPuntoInt.ejecutar();
+            PuntoInteres p = CreadorPuntoInteres.getTipoPInteres(tipoPInteres);
+            
+            LectorPuntoInteres lectorP = new LectorPuntoInteres();
 
             do{
                 try{
                     int codigo = leerCodigo(); // lanza una excepcion si se ingreso mal un codigo
-                    gestor.existeCodigo(codigo); // lanza una excepcion si existe un codigo duplicado
-
-                    p.cargarDato(codigo);
-
+                    gestorPInteres.existeCodigo(codigo); 
+                    
+                    lectorP.cargarPunto(p, codigo, tipoPInteres);
                     objCargado = true; 
 
                 }catch(CodigoDuplicadoException c){
@@ -145,7 +270,8 @@ public class AppIE {
                 }
             }while(!objCargado);
 
-            gestor.cargar(p);
+            gestorPInteres.cargar(p);
+            gestorArbol.insertar(p); 
             Consola.emitirMensajeLN("Punto de interes guardado correctamente.");
 
         }catch(RepositorioLlenoException e){
@@ -153,49 +279,50 @@ public class AppIE {
         }
     }
     
-    private void mostrarPuntosInteres(){
+    private int leerCodigo() throws DatoInvalidoException {
+        Consola.emitirBordeLN(40, "=");
+        Consola.emitirMensaje("Ingrese codigo: ");
+        int codigo = Lector.leerInt();
+        Consola.emitirBordeLN(40, "=");
+        
+        boolean codigoValido = Validador.esNroPositivo(codigo);
+        
+        if (!codigoValido) {
+            throw new DatoInvalidoException("El codigo no puede ser negativo.");
+        }
+        return codigo;
+    }
+
+    private void crearIndice() {
         try{
-            gestor.estaVacio();
-            gestor.mostrar();
-        }catch(RepositorioVacioException e){
-            Consola.emitirError(e.getMessage());
+            gestorArbol.construirIndice(gestorPInteres.getRepo());
+            Consola.emitirMensajeLN("Indice reconstruido correctamente.");
+        }catch(RepositorioVacioException r){
+            Consola.emitirError(r.getMessage());
         }
     }
     
-    private void buscarPuntoInteres(){
+    
+    // ================================================================================================================ //
+    // ============================================  Metodos para mostrar  ============================================ //
+    // ================================================================================================================ //
+    
+    
+    private void mostrarPuntosInteres(){
         try{
-            gestor.estaVacio();
-            Consola.emitirMensajeLN("");
-            Consola.emitirMensajeLN("Codigos disponibles:");
-            Consola.emitirBordeLN(40, "-");
-            gestor.mostCodDisponible();
-
-            int codigo = leerCodigo();
-
-            PuntoInteres p = gestor.buscarCodigo(codigo);
-
-            if(p == null){
-                Consola.emitirMensajeLN("");
-                Consola.emitirError("No se encontró un punto de interés con el código "+codigo+".");
-            }else{
-                p.mostrarInformacion();
-            }
-
+            gestorPInteres.mostrar();
         }catch(RepositorioVacioException e){
             Consola.emitirError(e.getMessage());
-        }catch(DatoInvalidoException d){
-            Consola.emitirError(d.getMessage());
         }
     }
     
     private void contarPorTipo(){
         try{
-            gestor.estaVacio();
-
+            gestorPInteres.estaVacio();
             int tipoPInte = mTipoPuntoInt.ejecutar();
 
-            String stringTipoPInte = obtenerNombreTipo(tipoPInte);
-            int cantidad = gestor.CantPorTipo(stringTipoPInte);
+            String stringTipoPInte = StringTipoP(tipoPInte);
+            int cantidad = gestorPInteres.CantPorTipo(stringTipoPInte);
             Consola.emitirResultado(40, "-", "Cantidad de tipo "+stringTipoPInte+": "+cantidad);
 
         }catch(RepositorioVacioException e){
@@ -205,9 +332,7 @@ public class AppIE {
     
     private void mostrarMayorAltitud(){
         try{
-            gestor.estaVacio();
-
-            PuntoInteres p = gestor.determinarMayorAltitud();
+            PuntoInteres p = gestorPInteres.determinarMayorAltitud();
 
             Consola.emitirMensajeLN("");
             Consola.emitirMensajeLN("Punto de interes mas alto:");
@@ -222,10 +347,9 @@ public class AppIE {
     
     private void mostrarPromedioAltitud(){
         try{
-            gestor.estaVacio();
             Consola.emitirMensajeLN("");
             Consola.emitirBordeLN(40, "-");
-            Consola.emitirMensajeLN("El promedio de altitud es: "+gestor.promedioAltitud());
+            Consola.emitirMensajeLN("El promedio de altitud es: "+gestorPInteres.promedioAltitud());
             Consola.emitirBordeLN(40, "-");
 
         }catch(RepositorioVacioException e){
@@ -235,9 +359,7 @@ public class AppIE {
     
     private void mostrarAccesibilidadAlta(){
         try{
-            gestor.estaVacio();
-
-            int cantAccesdAlta = gestor.contarAccesibilidadAlta();
+            int cantAccesdAlta = gestorPInteres.contarAccesibilidadAlta();
             Consola.emitirResultado(40, "-", "La cantidad accesibilidad alta es: "+cantAccesdAlta);
 
         }catch(RepositorioVacioException e){
@@ -245,7 +367,109 @@ public class AppIE {
         }
     }
     
-    private String obtenerNombreTipo(int tipoPInte){
+    private void mostrarAscendente() {
+        try {
+            gestorArbol.mostrarInOrden();
+        } catch (ArbolVacioExcepcion e) {
+            Consola.emitirError(e.getMessage());
+        }
+    }
+    
+    private void estadisticasArbol(){
+        try {
+            int[] estadisticas = gestorArbol.getEstadistica();
+            
+            Consola.emitirTitulo(40, "=", "Estadisticas del arbol");
+            Consola.emitirMensajeLN("Cantidad de nodos: "+estadisticas[0]);
+            Consola.emitirMensajeLN("Altura: "+estadisticas[1]);
+            Consola.emitirMensajeLN("Cantidad de hojas: "+estadisticas[2]);
+            Consola.emitirMensajeLN("Cantidad nodo internos: "+estadisticas[3]);
+            Consola.emitirBordeLN(40, "=");
+        } catch (ArbolVacioExcepcion e) {
+            Consola.emitirError(e.getMessage());
+        }
+    }
+    
+    
+    // =============================================================================================================== //
+    // ============================================  Metodos para buscar  ============================================ //
+    // =============================================================================================================== //
+    
+    
+    private void buscarPuntoInteres(){
+        try{
+            gestorPInteres.estaVacio();
+            Consola.emitirMensajeLN("");
+            Consola.emitirMensajeLN("Codigos disponibles:");
+            Consola.emitirBordeLN(40, "-");
+            gestorPInteres.mostCodDisponible();
+
+            int codigo = leerCodigo();
+
+            PuntoInteres p = gestorPInteres.buscarCodigo(codigo);
+
+            if(p == null){
+                Consola.emitirMensajeLN("");
+                Consola.emitirError("No se encontró un punto de interés con el código '"+codigo+"'.");
+            }else{
+                p.mostrarInformacion();
+            }
+
+        }catch(RepositorioVacioException e){
+            Consola.emitirError(e.getMessage());
+        }catch(DatoInvalidoException d){
+            Consola.emitirError(d.getMessage());
+        }
+    }
+
+    private void buscarPorIndice() {
+        try {
+            gestorArbol.arbolVacio();
+            
+            int codigo = leerCodigo();
+            PuntoInteres p = gestorArbol.buscarCodigo(codigo);
+            
+            if(p != null){
+                p.mostrarInformacion();
+            }else{
+                Consola.emitirError("No se encontrar el punto de interes con el codigo '"+codigo+"'.");
+            }
+            
+        } catch (ArbolVacioExcepcion e) {
+            Consola.emitirError(e.getMessage());
+        }
+    }
+    
+    
+    // ================================================================================================================= //
+    // ============================================  Metodos para eliminar  ============================================ //
+    // ================================================================================================================= //
+    
+
+    private void eliminarIndice() {
+        try {
+            gestorArbol.arbolVacio();
+            int codigo = leerCodigo();
+            
+            PuntoInteres p = gestorArbol.eliminarPorCodigo(codigo);
+            
+            if(p != null){
+                Consola.emitirMensajeLN("El punto de interes con el codigo '" + codigo + "' fue eliminado correctamente.");
+            }else{
+                Consola.emitirError("No se encontro el punto de interes con el codigo '" + codigo + "'.");
+            }
+        } catch (ArbolVacioExcepcion e) {
+            Consola.emitirError(e.getMessage());
+        }
+    }
+    
+    
+    // ================================================================================================================= //
+    // ================================================  Otros Metodos  ================================================ //
+    // ================================================================================================================= //
+    
+    
+    private String StringTipoP(int tipoPInte){
         if(tipoPInte == 1){
             return "Mirador";
         }

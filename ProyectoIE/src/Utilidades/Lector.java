@@ -3,8 +3,9 @@ package Utilidades;
 import java.util.Scanner;
 
 public class Lector {
+    private final static Scanner leer = new Scanner(System.in);
+    
     public static String leerString(){
-        Scanner leer = new Scanner(System.in);
         return leer.nextLine();
     }
     

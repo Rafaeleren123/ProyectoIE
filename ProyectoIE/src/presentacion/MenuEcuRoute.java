@@ -1,12 +1,10 @@
 package presentacion;
 
-import Logica.Menu;
-
 public class MenuEcuRoute {
     private Menu menu;
     
     public MenuEcuRoute(){
-        menu = new Menu(7);
+        menu = new Menu(4);
     }
     
     public int ejecutar(){
@@ -14,8 +12,18 @@ public class MenuEcuRoute {
     }
     
     public void cargar(){
-        String[] opciones = {"Cargar","Mostrar","Buscar","Contar","Mayor altitud", "Promedio altitud", "Cantidad de accesibilidad alta", "Salir"};
+        String[] opciones = {
+            "Cargar",
+            "Mostrar",
+            "Buscar",
+            "Eliminar",
+            "Salir"
+        };
         
         menu.cargarDato("Menu Ecu Route", opciones);
+    }
+
+    public int getCantOpc() {
+        return menu.getCantOpciones();
     }
 }

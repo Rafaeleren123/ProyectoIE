@@ -1,6 +1,8 @@
-package Logica; 
+package Logica.Gestor; 
 
+import Logica.Excepciones.*;
 import Dato.*;
+import Logica.PuntoInteres;
 
 public class GestorPuntosInteres {
     private RepositorioPuntosInteres repositorio;
@@ -30,14 +32,16 @@ public class GestorPuntosInteres {
      *
      * @param nuevoPunto punto de interés que se desea almacenar.
      */
-    public void cargar(PuntoInteres nuevoPunto) throws Logica.Excepciones.RepositorioLlenoException{
+    public void cargar(PuntoInteres nuevoPunto) throws RepositorioLlenoException{
         repositorio.agregar(nuevoPunto);
     }
     
     /**
      * Inicia el recorrido recursivo de los puntos de interés almacenados.
      */
-    public void mostrar(){
+    public void mostrar() throws RepositorioVacioException{
+        estaVacio();
+        
         mostrarRecursivo(0);
     }
     
@@ -68,7 +72,9 @@ public class GestorPuntosInteres {
      *
      * @return cantidad de puntos con accesibilidad alta.
      */
-    public int contarAccesibilidadAlta(){
+    public int contarAccesibilidadAlta() throws RepositorioVacioException{
+        estaVacio();
+        
         return contarAccesibilidadAltaRecursivo(0);
     }
     
@@ -88,7 +94,9 @@ public class GestorPuntosInteres {
      *
      * @return punto de interés con mayor altitud.
      */
-    public PuntoInteres determinarMayorAltitud(){
+    public PuntoInteres determinarMayorAltitud() throws RepositorioVacioException{
+        estaVacio();
+        
         return mayorAltitudRecursivo(0);
     }
     
@@ -98,22 +106,14 @@ public class GestorPuntosInteres {
      * @return promedio de las altitudes.
      */
     public double promedioAltitud(){
+        if(repositorio.estaVacio()){
+            return 0;
+        }
+        
         double sumaTotal = sumarAltitudesRecursivo(0);
         int cantidad = repositorio.cantidad();
         
         return sumaTotal/cantidad;
-    }
-    
-    /**
-     * Verifica si el repositorio se encuentra lleno.
-     *
-     * @throws RepositorioLlenoException si no queda espacio disponible
-     *         para almacenar nuevos puntos de interés.
-     */
-    public void estaLleno() throws RepositorioLlenoException{
-        if(repositorio.estaLleno()){
-            throw new RepositorioLlenoException("No queda mas espacio.");
-        }
     }
     
     /**
@@ -125,6 +125,12 @@ public class GestorPuntosInteres {
         if(repositorio.estaVacio()){
             throw new RepositorioVacioException("No hay puntos de intereses guardados.");
         }
+    }
+    
+    public RepositorioPuntosInteres getRepo() throws RepositorioVacioException{
+        estaVacio();
+        
+        return repositorio;
     }
     
     
