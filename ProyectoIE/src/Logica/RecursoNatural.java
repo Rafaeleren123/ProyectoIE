@@ -59,6 +59,6 @@ public class RecursoNatural extends PuntoInteres {
             throw new DatoInvalidoException("Opcion de categoria no valida.");
         }
         
-        this.categoria = categoria;
+        this.categoria = categoria-1;
     }
 }

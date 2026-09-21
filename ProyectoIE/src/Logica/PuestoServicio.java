@@ -58,6 +58,6 @@ public class PuestoServicio extends PuntoInteres{
             throw new DatoInvalidoException("Opcion de tipoServicio no valida.");
         }
         
-        this.tipoServicio = tipoServicio;
+        this.tipoServicio = tipoServicio-1;
     }
 }

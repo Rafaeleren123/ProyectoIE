@@ -84,7 +84,11 @@ public class GestorArbol {
     
     public PuntoInteres eliminarPorCodigo(int codigo){
         PuntoInteres p = buscarCodigo(codigo);
-        arbol.eliminar(p);
+        
+        if(p != null){
+            arbol.eliminar(p);
+        }
+        
         
         return p;
     }

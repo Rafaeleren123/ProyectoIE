@@ -58,6 +58,6 @@ public class Mirador extends PuntoInteres{
             throw new DatoInvalidoException("Opcion de tipo vista no valida.");
         }
         
-        this.tipoVista = tipoVista;
+        this.tipoVista = tipoVista-1;
     }
 }
