@@ -1,4 +1,4 @@
-package Logica;
+package Logica.Arbol;
 
 public class NodoABB <T>{
     private T dato;

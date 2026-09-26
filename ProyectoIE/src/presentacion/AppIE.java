@@ -4,7 +4,6 @@ import Logica.CreadorPuntoInteres;
 import Logica.Gestor.GestorPuntosInteres;
 import Logica.PuntoInteres;
 import Logica.Excepciones.*;
-import Logica.Gestor.GestorArbol;
 import Utilidades.*;
 
 /**
@@ -24,9 +23,8 @@ public class AppIE {
     private Menu mEliminar; // Menu que muestra las opciones de eliminar
     private Menu mTipoPuntoInt; // Menu que muestra los tipos de Punto de interes
     
-    // Tipo de gestores
+    
     private GestorPuntosInteres gestorPInteres; 
-    private GestorArbol gestorArbol;
     
     public AppIE() {
         mEcuRoute = new MenuEcuRoute();
@@ -38,7 +36,6 @@ public class AppIE {
         
         
         gestorPInteres = new GestorPuntosInteres();
-        gestorArbol = new GestorArbol();
     }
     
     
@@ -271,7 +268,7 @@ public class AppIE {
             }while(!objCargado);
 
             gestorPInteres.cargar(p);
-            gestorArbol.insertar(p); 
+            
             Consola.emitirMensajeLN("Punto de interes guardado correctamente.");
 
         }catch(RepositorioLlenoException e){
@@ -295,7 +292,7 @@ public class AppIE {
 
     private void crearIndice() {
         try{
-            gestorArbol.construirIndice(gestorPInteres.getRepo());
+            gestorPInteres.construirIndice();
             Consola.emitirMensajeLN("Indice reconstruido correctamente.");
         }catch(RepositorioVacioException r){
             Consola.emitirError(r.getMessage());
@@ -369,7 +366,7 @@ public class AppIE {
     
     private void mostrarAscendente() {
         try {
-            gestorArbol.mostrarInOrden();
+            gestorPInteres.mostrarInOrden();
         } catch (ArbolVacioExcepcion e) {
             Consola.emitirError(e.getMessage());
         }
@@ -377,7 +374,7 @@ public class AppIE {
     
     private void estadisticasArbol(){
         try {
-            int[] estadisticas = gestorArbol.getEstadistica();
+            int[] estadisticas = gestorPInteres.getEstadistica();
             
             Consola.emitirTitulo(40, "=", "Estadisticas del arbol");
             Consola.emitirMensajeLN("Cantidad de nodos: "+estadisticas[0]);
@@ -424,10 +421,10 @@ public class AppIE {
 
     private void buscarPorIndice() {
         try {
-            gestorArbol.arbolVacio();
+            gestorPInteres.arbolVacio();
             
             int codigo = leerCodigo();
-            PuntoInteres p = gestorArbol.buscarCodigo(codigo);
+            PuntoInteres p = gestorPInteres.buscarPorCodigo(codigo);
             
             if(p != null){
                 p.mostrarInformacion();
@@ -448,10 +445,10 @@ public class AppIE {
 
     private void eliminarIndice() {
         try {
-            gestorArbol.arbolVacio();
+            gestorPInteres.arbolVacio();
             int codigo = leerCodigo();
             
-            PuntoInteres p = gestorArbol.eliminarPorCodigo(codigo);
+            PuntoInteres p = gestorPInteres.eliminarPorCodigo(codigo);
             
             if(p != null){
                 Consola.emitirMensajeLN("El punto de interes con el codigo '" + codigo + "' fue eliminado correctamente.");
