@@ -5,6 +5,7 @@ import logica.CreadorPuntoInteres;
 import logica.GestorPuntosInteres;
 import logica.puntoInteres.PuntoInteres;
 import Utilidades.*;
+import logica.Sendero;
 
 /**
  * Clase principal de la capa de presentación.
@@ -117,6 +118,10 @@ public class AppIE {
                 crearIndice();
                 break;
                 
+//            case 3:
+//                altaSendero();
+//                break;
+                
             case 3:
                 Consola.emitirMensajeLN("Volviendo al menu principal.");
                 break;
@@ -201,8 +206,9 @@ public class AppIE {
         
         // mCargar
         opciones = new String[] {
-            "cargar", 
+            "cargar P. I.", 
             "Restaurar (arbol)",
+            "Cargar Sendero",
             "Volver"
         };
         mCargar.cargarDato("Opciones de cargar P. I.", opciones);
@@ -276,6 +282,42 @@ public class AppIE {
         }
     }
     
+    private void altaSendero(){
+        boolean existePI = false;    
+        boolean sonIiguales = false;
+        PuntoInteres[] p = new PuntoInteres[2];
+        int i=0;
+        int[] codigos = new int[2];
+        
+        do{
+            // leer primer punto interes
+            codigos[i] = leerCodigo();
+            
+            if(i == 1){ // esto es para ver si el segundo P.I. tiene el mismo codigo que el primero
+                sonIiguales = codigos[0] == codigos[1]; 
+            }
+            
+            // buscar si existe (pero busca por arbol)
+            p[i] = gestorPInteres.buscarPorCodigo(codigos[i], true); // realiza una busqueda mas rapida que el vector
+
+            existePI = p != null;
+            
+            if(existePI && !sonIiguales){
+                i++;
+            }
+            
+        }while(!existePI && i < 2);
+        
+        // cargar sendero
+        LectorSendero lector = new LectorSendero();
+        Sendero s = lector.cargar();
+        
+        // incorporarlo como nueva arista
+        //agregarSendero(p[0], p[1], s);
+        
+    }
+    
+    // preguntar si es necesario que este metodo lance la excepcion
     private int leerCodigo() throws DatoInvalidoException {
         Consola.emitirBordeLN(40, "=");
         Consola.emitirMensajeLN("Ingrese codigo: ");
@@ -424,7 +466,7 @@ public class AppIE {
             gestorPInteres.arbolVacio();
             
             int codigo = leerCodigo();
-            PuntoInteres p = gestorPInteres.buscarPorCodigo(codigo);
+            PuntoInteres p = gestorPInteres.buscarPorCodigo(codigo, false);
             
             if(p != null){
                 p.mostrarInformacion();

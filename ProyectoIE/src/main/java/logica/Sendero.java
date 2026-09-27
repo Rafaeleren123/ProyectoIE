@@ -1,5 +1,7 @@
 package logica;
 
+import logica.excepciones.DatoInvalidoException;
+
 public class Sendero {
     private double distancia;
     private int dificultad;
@@ -36,15 +38,27 @@ public class Sendero {
         return habilitado;
     }
 
-    public void setDistancia(double distancia) {
+    public void setDistancia(double distancia) throws DatoInvalidoException{
+        if(distancia <= 0){
+            throw new DatoInvalidoException("La distancia debe ser mayor a cero.");
+        }
+        
         this.distancia = distancia;
     }
 
-    public void setDificultad(int dificultad) {
+    public void setDificultad(int dificultad) throws DatoInvalidoException{
+        if(dificultad < 1 || dificultad > 5){
+            throw new DatoInvalidoException("La dificultad solo puede ser de 1 a 5.");
+        }
+        
         this.dificultad = dificultad;
     }
 
-    public void setTiempoEstimado(int tiempoEstimado) {
+    public void setTiempoEstimado(int tiempoEstimado) throws DatoInvalidoException{
+        if(tiempoEstimado <= 0){
+            throw new DatoInvalidoException("El tiempo estimado debe ser mayor a cero.");
+        }
+        
         this.tiempoEstimado = tiempoEstimado;
     }
 

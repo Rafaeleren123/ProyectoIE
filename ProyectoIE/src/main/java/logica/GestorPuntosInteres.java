@@ -10,11 +10,16 @@ import logica.puntoInteres.PuntoInteres;
 
 public class GestorPuntosInteres {
     private RepositorioPuntosInteres repositorio;
+    private ArbolABB<PuntoInteres> arbolBusqueda;
     private ArbolABB<PuntoInteres> arbol;
+    
     
     public GestorPuntosInteres(){
         repositorio = new RepositorioPuntosArreglo();
         this.arbol = new ArbolABB<PuntoInteres>();
+        
+        // solo se va ocupar para hacer busquedas
+        this.arbolBusqueda = new ArbolABB<PuntoInteres>();
     }
     
     
@@ -48,6 +53,9 @@ public class GestorPuntosInteres {
     public void cargar(PuntoInteres nuevoPunto) throws RepositorioLlenoException{
         repositorio.agregar(nuevoPunto);
         arbol.insertar(nuevoPunto);
+        
+        // opcional
+        arbolBusqueda.insertar(nuevoPunto);
     }
     
     
@@ -343,8 +351,12 @@ public class GestorPuntosInteres {
     * @param codigo código del punto de interés a buscar.
     * @return el punto encontrado o null si no existe.
     */
-    public PuntoInteres buscarPorCodigo(int codigo) {
-        return buscarCodigoRecursivo(arbol.getRaiz(), new Mirador(codigo));
+    public PuntoInteres buscarPorCodigo(int codigo, boolean porArbolBusqueda) {
+        if(porArbolBusqueda){
+            return buscarCodigoRecursivo(arbolBusqueda.getRaiz(), new Mirador(codigo));
+        }else{
+            return buscarCodigoRecursivo(arbol.getRaiz(), new Mirador(codigo));
+        }
     }
 
     private PuntoInteres buscarCodigoRecursivo(NodoABB<PuntoInteres> nodo, PuntoInteres dato) {

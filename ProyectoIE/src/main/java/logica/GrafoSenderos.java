@@ -1,14 +1,18 @@
 package logica;
 
-import org.jgrapht.Graph;
-
+import logica.puntoInteres.PuntoInteres;
+import org.jgrapht.graph.SimpleGraph;
 
 public class GrafoSenderos {
-    public void agregarVertice(){
-        
+    
+    private SimpleGraph<PuntoInteres, Sendero> grafo;
+    
+    public void agregarVertice(PuntoInteres p){
+        grafo.addVertex(p);
     }
     
-    public void agregarSendero(){
+    public void agregarSendero(PuntoInteres punto1, PuntoInteres punto2, Sendero s){
+        grafo.addEdge(punto1, punto2, s);
         
     }
     
