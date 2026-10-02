@@ -16,6 +16,11 @@ public class PuestoServicio extends PuntoInteres{
         super();
         tipoServicio = 0;
     }
+
+    public PuestoServicio(int codigo, String nombre, double altitud, int nivelAccesibilidad, int tipoServicio) {
+        super(codigo, nombre, altitud, nivelAccesibilidad);
+        this.tipoServicio = tipoServicio;
+    }
     
     
     // ============================================= Metodos Publicos ============================================= //

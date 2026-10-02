@@ -10,16 +10,14 @@ import logica.puntoInteres.PuntoInteres;
 
 public class GestorPuntosInteres {
     private RepositorioPuntosInteres repositorio;
-    private ArbolABB<PuntoInteres> arbolBusqueda;
     private ArbolABB<PuntoInteres> arbol;
+    private GrafoSenderos grafo;
     
     
     public GestorPuntosInteres(){
         repositorio = new RepositorioPuntosArreglo();
-        this.arbol = new ArbolABB<PuntoInteres>();
-        
-        // solo se va ocupar para hacer busquedas
-        this.arbolBusqueda = new ArbolABB<PuntoInteres>();
+        arbol = new ArbolABB<PuntoInteres>();
+        grafo = new GrafoSenderos();
     }
     
     
@@ -34,7 +32,7 @@ public class GestorPuntosInteres {
      * @param codigo código que se desea comprobar.
      * @throws CodigoDuplicadoException si el código ya se encuentra registrado.
      */
-    public void existeCodigo(int codigo) throws CodigoDuplicadoException{
+    public void validarCodigoNoDuplicado(int codigo) throws CodigoDuplicadoException{
         if(repositorio.existeCodigo(codigo)){
             throw new CodigoDuplicadoException("El codigo '"+codigo+"' ya existe.");
         }
@@ -53,9 +51,7 @@ public class GestorPuntosInteres {
     public void cargar(PuntoInteres nuevoPunto) throws RepositorioLlenoException{
         repositorio.agregar(nuevoPunto);
         arbol.insertar(nuevoPunto);
-        
-        // opcional
-        arbolBusqueda.insertar(nuevoPunto);
+        grafo.agregarVertice(nuevoPunto);
     }
     
     
@@ -98,7 +94,7 @@ public class GestorPuntosInteres {
         PuntoInteres actual;
         for (int i = 0; i < repositorio.cantidad(); i++) {
             actual = repositorio.obtener(i);
-            actual.mostCodNom();
+            actual.encabezado();
         }
     }
     
@@ -280,6 +276,10 @@ public class GestorPuntosInteres {
         }
     }
     
+    public int getCantPInteres(){
+        return repositorio.cantidad();
+    }
+    
     
     // ================================================================================================================= //
     // ==============================================  Metodos con arbol  ============================================== //
@@ -291,7 +291,7 @@ public class GestorPuntosInteres {
     // -------------------------------------------------
     
     
-    public void arbolVacio() throws ArbolVacioExcepcion{
+    public void validarArbolNoVacio() throws ArbolVacioExcepcion{
         if(arbol.estaVacio()){
             throw new ArbolVacioExcepcion("No hay punto de interes guardado.");
         }
@@ -321,9 +321,9 @@ public class GestorPuntosInteres {
     // Mostrar inOrden
     // -------------------------------------------------
     
-    
+    // preguntar a la profe como hacer que muestre el metodo mostrarInformacion
     public void mostrarInOrden() throws ArbolVacioExcepcion{
-        arbolVacio();
+        validarArbolNoVacio();
         mostrarInOrdenRecursivo(arbol.getRaiz());
     }
     
@@ -351,29 +351,8 @@ public class GestorPuntosInteres {
     * @param codigo código del punto de interés a buscar.
     * @return el punto encontrado o null si no existe.
     */
-    public PuntoInteres buscarPorCodigo(int codigo, boolean porArbolBusqueda) {
-        if(porArbolBusqueda){
-            return buscarCodigoRecursivo(arbolBusqueda.getRaiz(), new Mirador(codigo));
-        }else{
-            return buscarCodigoRecursivo(arbol.getRaiz(), new Mirador(codigo));
-        }
-    }
-
-    private PuntoInteres buscarCodigoRecursivo(NodoABB<PuntoInteres> nodo, PuntoInteres dato) {
-        if (nodo == null) {
-            return null;
-        }
-        
-        PuntoInteres actual = nodo.getDato();
-        int comparacion = dato.compareTo(actual);
-        
-        if (comparacion == 0) {
-            return actual;
-        }
-        if (comparacion < 0) {
-            return buscarCodigoRecursivo(nodo.getIzquierdo(), dato);
-        }
-        return buscarCodigoRecursivo(nodo.getDerecho(), dato);
+    public PuntoInteres buscarPorCodigo(int codigo) {
+        return arbol.buscar(new Mirador(codigo));
     }
     
     
@@ -398,80 +377,67 @@ public class GestorPuntosInteres {
     // -------------------------------------------------
     
     
-    /**
-    * Obtiene estadísticas del árbol: cantidad de nodos,
-    * altura, cantidad de hojas y cantidad de nodos internos.
-    *
-    * @return arreglo con las estadísticas del árbol.
-    * @throws ArbolVacioExcepcion si el árbol está vacío.
-    */
-    public int[] getEstadistica() throws ArbolVacioExcepcion{
-        arbolVacio();
-        
-        int[] estadisticas = new int[4];
-        estadisticas[0] = cantNodoRecursivo(arbol.getRaiz());
-        estadisticas[1] = alturaArbolRecursivo(arbol.getRaiz());
-        estadisticas[2] = cantHojasRecursivo(arbol.getRaiz());
-        estadisticas[3] = canNodoInterRecursivo(arbol.getRaiz());
-        
-        return estadisticas;
-    }
-    
-    private int cantNodoRecursivo(NodoABB<PuntoInteres> nodo){
-        if (nodo == null) {
-            return 0;
-        }
-        
-        return 1 + cantNodoRecursivo(nodo.getIzquierdo()) + cantNodoRecursivo(nodo.getDerecho());
-    }
-    
-    /**
-    * Calcula recursivamente la altura del árbol considerando
-    * la cantidad de nodos del camino más largo desde la raíz.
-    */
-    private int alturaArbolRecursivo(NodoABB<PuntoInteres> nodo){
-        if (nodo == null) {
-            return 0;
-        }
-
-        int alturaIzquierda = alturaArbolRecursivo(nodo.getIzquierdo());
-        int alturaDerecha = alturaArbolRecursivo(nodo.getDerecho());
-
-        return 1 + Math.max(alturaIzquierda, alturaDerecha);
-    }
-    
-    private int cantHojasRecursivo(NodoABB<PuntoInteres> nodo){
-        if (nodo == null) {
-            return 0;
-        }
-
-        if (nodo.getIzquierdo() == null && nodo.getDerecho() == null) {
-            return 1;
-        }
-
-        return cantHojasRecursivo(nodo.getIzquierdo()) + cantHojasRecursivo(nodo.getDerecho());
-    }
-
-    private int canNodoInterRecursivo(NodoABB<PuntoInteres> nodo) {
-        if (nodo == null) {
-            return 0;
-        }
-
-        int cantidad = canNodoInterRecursivo(nodo.getIzquierdo()) + canNodoInterRecursivo(nodo.getDerecho());
-
-        if (nodo.getIzquierdo() != null || nodo.getDerecho() != null) {
-            cantidad++;
-        }
-
-        return cantidad;
+    public int[] getEstadistica() {
+        return arbol.getEstadistica();
     }
     
     
+    // ================================================================================================================= //
+    // ==============================================  Metodos con Grafo  ============================================== //
+    // ================================================================================================================= //
     
     
+    public void verificarGrafoVacio() throws GrafoVacioException{
+        if(grafo.esVacio()){
+            throw new GrafoVacioException("No hay punto de interes guardados.");
+        }
+    }
     
+    public void validarConexionesDisponibles() throws ConexionAristaLlenoException{
+        if(grafo.esCompleto()){
+            throw new ConexionAristaLlenoException("Se alcanzo el limite de senderos.");
+        }
+    }
     
+    public void validarHayConexiones() throws ConexionAristaVaciaException{
+        if(grafo.noTieneAristas()){
+            throw new ConexionAristaVaciaException("No hay senderos guardados.");
+        }
+    }
     
+    public boolean existeConexion(PuntoInteres vertice1, PuntoInteres vertice2){
+        return grafo.existeConexion(vertice1, vertice2);
+    }
     
+    public void agregarSendero(PuntoInteres vertice1, PuntoInteres vertice2, Sendero s){
+        grafo.agregarSendero(vertice1, vertice2, s);
+    }
     
+    public void mostrarSendero(){
+        grafo.mostrarConexiones();
+    }
+    
+    public void mostrarPorPI(PuntoInteres vertice){
+        grafo.mostrarPorVertice(vertice);
+    }
+    
+    public boolean eliminarSendero(PuntoInteres vertice1, PuntoInteres vertice2){
+        return grafo.eliminarSendero(vertice1, vertice2) != null;
+    }
+    
+    public boolean existeCamino(PuntoInteres verticeOrigen, PuntoInteres verticeDestino){
+        return grafo.existeCamino(verticeOrigen, verticeDestino);
+    }
+    
+    public void recorridoDFS(PuntoInteres verticeInicio){
+        grafo.recorridoDFS(verticeInicio);
+    }
+    
+    public void recorridoBFS(PuntoInteres verticeInicio){
+        grafo.recorridoBFS(verticeInicio);
+    }
+    
+    public int cantidadComponente(){
+        return grafo.contarComponentes();
+    }
 }

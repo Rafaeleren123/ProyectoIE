@@ -1,14 +1,16 @@
 package presentacion;
 
 import Utilidades.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Menu {
     private String titulo;  
-    private String[] opciones;
+    private List<String> opciones;
     
-    public Menu(int cantOpc) {
+    public Menu() {
         this.titulo=null;
-        this.opciones = new String[cantOpc];
+        this.opciones = new ArrayList<String>();
     }
     
     
@@ -33,7 +35,10 @@ public class Menu {
     
     public void cargarDato(String titulo, String[] opciones){
         setTitulo(titulo);
-        setOpciones(opciones);
+        
+        for (int i = 0; i < opciones.length; i++) {
+            this.opciones.add(opciones[i]);
+        }
     }
    
    
@@ -53,20 +58,21 @@ public class Menu {
             Consola.emitirMensajeLN("Respuesta:");
             opcion=Lector.leerInt();
             
-            if(!Validador.esNroValido(opcion, 1, opciones.length)){
+            if(!Validador.esNroValido(opcion, 1, opciones.size())){
                 Consola.emitirError("Opcion no valida.");
             }
             
-        } while(!Validador.esNroValido(opcion, 1, opciones.length));
+        } while(!Validador.esNroValido(opcion, 1, opciones.size()));
         
         return opcion;
     }
     
     private void visualizar(){
         Consola.emitirTitulo(40,"=",titulo); //metodo que muestra el menu centrado y con un tipo de estilo
-        
-        for(int i=1 ; i <= opciones.length; i++) {
-            Consola.emitirMensajeLN(i+"_ "+opciones[i-1]);
+        int i = 0;
+        for(String opc : opciones) {
+            i++;
+            Consola.emitirMensajeLN(i+"_ "+opc);
         }
     }
     
@@ -78,12 +84,12 @@ public class Menu {
         return titulo;
     }
     
-    public String[] getOpciones() {
+    public List<String> getOpciones() {
         return opciones;
     }
     
     public int getCantOpciones(){
-        return opciones.length;
+        return opciones.size();
     }
     
     
@@ -94,7 +100,7 @@ public class Menu {
         this.titulo = titulo;
     }
     
-    private void setOpciones(String[] opciones) {
+    private void setOpciones(List<String> opciones) {
         this.opciones = opciones;
     }
 }

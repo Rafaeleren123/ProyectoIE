@@ -31,19 +31,30 @@ public abstract class PuntoInteres implements Comparable<PuntoInteres>{
         this.altitud = 0;
         this.nivelAccesibilidad = 0;
     }
+
+    public PuntoInteres(int codigo, String nombre, double altitud, int nivelAccesibilidad) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.altitud = altitud;
+        this.nivelAccesibilidad = nivelAccesibilidad;
+    }
     
     
     // ============================================= Metodos Publicos ============================================= //
     
     
     public void mostrarDatoComunes(){
-        mostCodNom();
-        Consola.emitirMensajeLN("| Altitud: "+altitud+" metros |");
+        encabezado();
+        Consola.emitirMensajeLN("| Altitud: "+altitud+" metro |");
         Consola.emitirMensajeLN("| Tipo de accesibilidad: "+nivAccesVal[nivelAccesibilidad]+" |");
     }
     
-    public void mostCodNom(){
-        Consola.emitirMensajeLN("| Codigo: "+codigo+" | Nombre: "+nombre+" |");
+    public void encabezado(){
+        Consola.emitirMensajeLN("| Codigo: "+codigo+" | Tipo: "+obtenerTipo()+" | Nombre: "+nombre+" |");
+    }
+    
+    public void tipoYnombre(){
+        Consola.emitirMensajeLN("Tipo: "+obtenerTipo()+" | Nombre: "+nombre);
     }
     
     public boolean esMismoCodigo(int codigo){

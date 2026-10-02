@@ -4,19 +4,21 @@ public class MenuEcuRoute {
     private Menu menu;
     
     public MenuEcuRoute(){
-        menu = new Menu(4);
+        menu = new Menu();
     }
     
     public int ejecutar(){
         return menu.ejecutar();
     }
     
-    public void cargar(){
+        public void cargar(){
         String[] opciones = {
             "Cargar",
-            "Mostrar",
             "Buscar",
+            "Mostrar",
             "Eliminar",
+            "Estadisticas y calculos",
+            "Recorridos",
             "Salir"
         };
         

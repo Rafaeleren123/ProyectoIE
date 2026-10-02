@@ -1,5 +1,7 @@
 package logica.arbol;
 
+import logica.excepciones.ArbolVacioExcepcion;
+
 public class ArbolABB <T extends Comparable<T>>{
     private NodoABB<T> raiz;
     
@@ -56,20 +58,23 @@ public class ArbolABB <T extends Comparable<T>>{
     // BUSCAR
     // -------------------------------------------------
 
-    
-    public boolean buscar(T dato) {
+    public T buscar(T dato){
         return buscarRecursivo(raiz, dato);
     }
+    
+    public boolean existe(T dato) {
+        return buscarRecursivo(raiz, dato) != null;
+    }
 
-    private boolean buscarRecursivo(NodoABB<T> nodo, T dato) {
+    private T buscarRecursivo(NodoABB<T> nodo, T dato) {
         if (nodo == null) {
-            return false;
+            return null;
         }
         
         int comparacion = dato.compareTo(nodo.getDato());
         
         if (comparacion == 0) {
-            return true;
+            return nodo.getDato();
         }
         if (comparacion < 0) {
             return buscarRecursivo(nodo.getIzquierdo(), dato);
@@ -142,6 +147,76 @@ public class ArbolABB <T extends Comparable<T>>{
         return actual;
     }
     
+    // -------------------------------------------------
+    // Retornar las estadisticas del arbol
+    // -------------------------------------------------
+    
+    
+    /**
+    * Obtiene estadísticas del árbol: cantidad de nodos,
+    * altura, cantidad de hojas y cantidad de nodos internos.
+    *
+    * @return arreglo con las estadísticas del árbol.
+    */
+    public int[] getEstadistica() throws ArbolVacioExcepcion{
+        int[] estadisticas = new int[4];
+        estadisticas[0] = cantNodoRecursivo(raiz);
+        estadisticas[1] = alturaArbolRecursivo(raiz);
+        estadisticas[2] = cantHojasRecursivo(raiz);
+        estadisticas[3] = contarNodoInterRecursivo(raiz, true);
+        
+        return estadisticas;
+    }
+    
+    private int cantNodoRecursivo(NodoABB<T> nodo){
+        if (nodo == null) {
+            return 0;
+        }
+        
+        return 1 + cantNodoRecursivo(nodo.getIzquierdo()) + cantNodoRecursivo(nodo.getDerecho());
+    }
+    
+    /**
+    * Calcula recursivamente la altura del árbol considerando
+    * la cantidad de nodos del camino más largo desde la raíz.
+    */
+    private int alturaArbolRecursivo(NodoABB<T> nodo){
+        if (nodo == null) {
+            return 0;
+        }
+
+        int alturaIzquierda = alturaArbolRecursivo(nodo.getIzquierdo());
+        int alturaDerecha = alturaArbolRecursivo(nodo.getDerecho());
+
+        return 1 + Math.max(alturaIzquierda, alturaDerecha);
+    }
+    
+    private int cantHojasRecursivo(NodoABB<T> nodo){
+        if (nodo == null) {
+            return 0;
+        }
+
+        if (nodo.getIzquierdo() == null && nodo.getDerecho() == null) {
+            return 1;
+        }
+
+        return cantHojasRecursivo(nodo.getIzquierdo()) + cantHojasRecursivo(nodo.getDerecho());
+    }
+
+    private int contarNodoInterRecursivo(NodoABB<T> nodo, boolean esRaiz) {
+        if (nodo == null) {
+            return 0;
+        }
+
+        int cantidad = contarNodoInterRecursivo(nodo.getIzquierdo(), false)
+                     + contarNodoInterRecursivo(nodo.getDerecho(), false);
+
+        if (!esRaiz && (nodo.getIzquierdo() != null || nodo.getDerecho() != null)) {
+            cantidad++;
+        }
+
+        return cantidad;
+    }
     
     // -------------------------------------------------
     // RECORRIDO INORDEN

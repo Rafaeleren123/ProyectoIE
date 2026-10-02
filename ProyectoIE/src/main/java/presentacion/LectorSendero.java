@@ -15,35 +15,64 @@ public class LectorSendero {
     }
     
     public Sendero cargar(){
-        boolean cargaValida = false;
-        int dificultad, tiempoEstimado;
+        Consola.emitirTitulo(40,"=", "Alta de sendero");
         
-        do{
-            try {
-                leerDistancia();
-            
-                dificultad = leerInt("Ingrese la dificultad (1 a 5) :");
-                s.setDificultad(dificultad);
-
-                tiempoEstimado = leerInt("Ingrese el tiempo de estimacion: ");
-                s.setTiempoEstimado(tiempoEstimado);
-
-                leerHabilitado();
-                
-                cargaValida = true;
-            } catch (DatoInvalidoException e) {
-                Consola.emitirError(e.getMessage());
-            }
-        }while(cargaValida);
-        
+        leerDistancia();
+        leerDificultad();
+        leerTiempoEstimado();
+        leerHabilitado();
+     
         return s;
     }
     
-    private void leerDistancia() throws DatoInvalidoException{
-        Consola.emitirMensajeLN("Ingrese distancia: ");
-        double distancia = Lector.leerDouble();
+    private void leerDistancia() {
+        boolean valido;
+        do{
+            Consola.emitirMensajeLN("Ingrese distancia: ");
+            double distancia = Lector.leerDouble();
+            
+            try{
+                s.setDistancia(distancia);
+                valido = true;
+            }catch(DatoInvalidoException e){
+                Consola.emitirError(e.getMessage());
+                valido = false;
+            }
+            
+        }while(!valido);
+    }
+    
+    private void leerDificultad(){
+        boolean valido;
+        int dificultad;
         
-        s.setDistancia(distancia);
+        do{
+            dificultad = leerInt("Ingrese la dificultad (1 a 5) :");
+            try {
+                s.setDificultad(dificultad);
+                valido = true;
+            } catch (DatoInvalidoException e) {
+                Consola.emitirError(e.getMessage());
+                valido = false;
+            }
+        }while(!valido);
+    }
+    
+    private void leerTiempoEstimado(){
+        boolean valido;
+        int tiempo;
+        
+        do{
+            tiempo = leerInt("Ingrese el tiempo de estimacion: ");
+            try {
+                s.setTiempoEstimado(tiempo);
+                valido = true;
+            } catch (DatoInvalidoException e) {
+                Consola.emitirError(e.getMessage());
+                valido = false;
+            }
+        }while(!valido);
+        
     }
     
     private int leerInt(String msj) {
@@ -51,17 +80,22 @@ public class LectorSendero {
         return Lector.leerInt();
     }
     
-    //
-    private void leerHabilitado() throws DatoInvalidoException{
-        Consola.emitirMensajeLN("Desea habilitarlo (si/no): ");
-        String opcion = Lector.leerString();
+    private void leerHabilitado() {
+        boolean valido;
         
-        opcion = opcion.toUpperCase();
-        
-        if(opcion.equals("SI") || opcion.equals("NO")){
-            s.setHabilitado(opcion.equals("SI"));
-        }else{
-            throw new DatoInvalidoException("Opcion no valida, solo puede ser si o no.");
-        }
+        do{
+            Consola.emitirMensajeLN("Desea habilitarlo (si/no): ");
+            String opcion = Lector.leerString();
+
+            opcion = opcion.toUpperCase();
+
+            if(opcion.equals("SI") || opcion.equals("NO")){
+                valido = true;
+                s.setHabilitado(opcion.equals("SI"));
+            }else{
+                Consola.emitirError("Opcion no valida, solo puede ser si o no.");
+                valido = false;
+            }
+        }while(!valido);
     }
 }

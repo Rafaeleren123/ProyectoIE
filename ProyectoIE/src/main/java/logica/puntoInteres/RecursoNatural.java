@@ -17,6 +17,11 @@ public class RecursoNatural extends PuntoInteres {
         super();
         categoria = 0;
     }
+
+    public RecursoNatural(int codigo, String nombre, double altitud, int nivelAccesibilidad, int categoria) {
+        super(codigo, nombre, altitud, nivelAccesibilidad);
+        this.categoria = categoria;
+    }
     
     
     // ============================================= Metodos Publicos ============================================= //

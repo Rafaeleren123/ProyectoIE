@@ -1,5 +1,6 @@
 package logica;
 
+import Utilidades.Consola;
 import logica.excepciones.DatoInvalidoException;
 
 public class Sendero {
@@ -20,7 +21,34 @@ public class Sendero {
         this.dificultad = 0;
         this.tiempoEstimado = 0;
         this.habilitado = false;
-    }    
+    }
+
+    public void mostrarInfo(){
+        Consola.emitirMensajeLN("| Distancia: "+getDistFormateada()+" metro | Tiempo estimado: "+stringTiempo()+" | Dificultad: "+dificultad+" | Estado: "+stringHabilitado()+" |");
+        Consola.emitirMensajeLN("");
+    }
+    
+    private String getDistFormateada() {
+        if (distancia % 1 == 0) {
+            return String.valueOf((long) distancia); 
+        }
+        return String.valueOf(distancia);            
+    }
+    
+    private String stringTiempo(){
+        int hora = tiempoEstimado/60;
+        int minuto = tiempoEstimado%60;
+        
+        return String.format("%02d:%02d", hora, minuto);
+    }
+    
+    private String stringHabilitado(){
+        if(habilitado){
+            return "Habilitado";
+        }
+        
+        return "No Habilitado";
+    }
 
     public double getDistancia() {
         return distancia;

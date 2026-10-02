@@ -17,6 +17,11 @@ public class Mirador extends PuntoInteres{
         super(codigo);
         tipoVista = 0;
     }
+
+    public Mirador(int codigo, String nombre, double altitud, int nivelAccesibilidad, int tipoVista) {
+        super(codigo, nombre, altitud, nivelAccesibilidad);
+        this.tipoVista = tipoVista;
+    }
     
     
     // ============================================= Metodos Publicos ============================================= //
