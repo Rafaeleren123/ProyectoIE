@@ -3,6 +3,7 @@ package logica;
 import logica.arbol.*;
 import logica.excepciones.*;
 import dato.*;
+import java.util.List;
 import logica.puntoInteres.Mirador;
 import logica.puntoInteres.PuntoInteres;
 
@@ -161,7 +162,7 @@ public class GestorPuntosInteres {
      * @param tipoPInte tipo de punto de interés que se desea contar.
      * @return cantidad de puntos que pertenecen al tipo indicado.
      */
-    public int CantPorTipo(String tipoPInte){
+    public int cantPorTipo(String tipoPInte){
         return contPorTipoRecursivo(0, tipoPInte);
     }
     
@@ -362,7 +363,7 @@ public class GestorPuntosInteres {
     
     
     public PuntoInteres eliminarPorCodigo(int codigo){
-        PuntoInteres p = buscarCodigo(codigo);
+        PuntoInteres p = buscarPorCodigo(codigo);
         
         if(p != null){
             arbol.eliminar(p);
@@ -429,12 +430,12 @@ public class GestorPuntosInteres {
         return grafo.existeCamino(verticeOrigen, verticeDestino);
     }
     
-    public void recorridoDFS(PuntoInteres verticeInicio){
-        grafo.recorridoDFS(verticeInicio);
+    public List<PuntoInteres> recorridoDFS(PuntoInteres verticeInicio){
+        return grafo.recorridoDFS(verticeInicio);
     }
     
-    public void recorridoBFS(PuntoInteres verticeInicio){
-        grafo.recorridoBFS(verticeInicio);
+    public List<PuntoInteres> recorridoBFS(PuntoInteres verticeInicio){
+        return grafo.recorridoBFS(verticeInicio);
     }
     
     public int cantidadComponente(){

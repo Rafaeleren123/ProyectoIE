@@ -18,7 +18,7 @@ public class Validador {
     }
     
     public static boolean esNroPositivo(int nro){
-        return nro >= 0;
+        return nro > 0;
     }
     
     public static boolean esUnNro(String nro){

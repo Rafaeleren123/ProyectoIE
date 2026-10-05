@@ -1,6 +1,7 @@
 package logica;
 
 import Utilidades.Consola;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import logica.puntoInteres.PuntoInteres;
@@ -8,7 +9,6 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
-import org.jgrapht.traverse.CrossComponentIterator;
 import org.jgrapht.traverse.DepthFirstIterator;
 
 public class GrafoSenderos {
@@ -89,23 +89,25 @@ public class GrafoSenderos {
         return false;
     }
     
-    public void recorridoDFS(PuntoInteres verticeInicio){
+    public List<PuntoInteres> recorridoDFS(PuntoInteres verticeInicio){
         DepthFirstIterator<PuntoInteres, Sendero> dfs = new DepthFirstIterator<>(grafo, verticeInicio);
         
-        recorrer(dfs);
+        return recorrer(dfs);
     }
     
-    public void recorridoBFS(PuntoInteres verticeInicio){
+    public List<PuntoInteres> recorridoBFS(PuntoInteres verticeInicio){
         BreadthFirstIterator<PuntoInteres, Sendero> bfs = new BreadthFirstIterator<>(grafo, verticeInicio);
         
-        recorrer(bfs);
+        return recorrer(bfs);
     }
     
-    private void recorrer(Iterator<PuntoInteres> iterador) {
+    private List<PuntoInteres> recorrer(Iterator<PuntoInteres> iterador) {
+        List<PuntoInteres> lista = new ArrayList<>();
         while (iterador.hasNext()) {
-            PuntoInteres actual = iterador.next();
-            actual.mostrarInformacion();
+            lista.add(iterador.next());
         }
+        
+        return lista;
     }
     
     public int contarComponentes(){

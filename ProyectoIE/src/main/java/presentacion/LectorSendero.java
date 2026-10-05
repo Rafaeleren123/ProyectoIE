@@ -4,9 +4,6 @@ import Utilidades.*;
 import logica.Sendero;
 import logica.excepciones.DatoInvalidoException;
 
-// preguntar a la profe si las excepciones se pueden 
-// tratar solo en la clase app o en toda la capa presentacion
-
 public class LectorSendero {
     private Sendero s;
     

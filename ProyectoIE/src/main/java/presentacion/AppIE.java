@@ -1,9 +1,9 @@
 package presentacion;
 
 import logica.excepciones.*;
-import logica.CreadorPuntoInteres;
 import logica.GestorPuntosInteres;
 import Utilidades.*;
+import java.util.List;
 import logica.Sendero;
 import logica.puntoInteres.*;
 
@@ -103,7 +103,7 @@ public class AppIE {
 
                 break;
                 
-            case 5: // Estadisticas y calculos 
+            case 5: 
                 do {
                     opc2 = mEstCalc.ejecutar();
                     procesarEstCalc(opc2);
@@ -111,7 +111,7 @@ public class AppIE {
                 
                 break;
                 
-            case 6: // Recorridos
+            case 6: 
                 do {
                     opc2 = mRecorrido.ejecutar();
                     procesarRecorrido(opc2);
@@ -333,14 +333,15 @@ public class AppIE {
 
     // metodo que se usara para casos de prueba
     private void cargarDatosPrueba() {
-        int codigo = 1000;
+        int codigo = 1000, i = 0;
         String[] nombre = {"Condor", "La Fauna", "Cascada Los Alisos", "Laguna", "Guardaparques", "Primeros Auxilios"};
         float altitud = 100;
-        int[] accesibilidad = {1, 2, 3, 4, 5};
+        int[] accesibilidad = {0, 1, 2, 3, 4};
         int[] tipos = {0, 1, 2};
 
-        try {
-            for (int i = 0; i < nombre.length; i++) {
+        while (i < nombre.length) {
+            try {
+                gestorPInteres.validarCodigoNoDuplicado(codigo);
                 if (i <= 1) {
                     gestorPInteres.cargar(new Mirador(codigo, nombre[i], altitud, accesibilidad[i], tipos[0]));
                 }
@@ -350,16 +351,19 @@ public class AppIE {
                 }
 
                 if (i > 3) {
-                    gestorPInteres.cargar(new PuestoServicio(codigo, nombre[i], altitud, accesibilidad[i - 2], tipos[2]));
+                    gestorPInteres.cargar(new PuestoServicio(codigo, nombre[i], altitud, accesibilidad[i - 1], tipos[2]));
                 }
 
+                i++;
                 codigo++;
                 altitud += altitud;
+            } catch (CodigoDuplicadoException e) {
+                i++;
+                codigo++;
+            } catch (RepositorioLlenoException e){
+                Consola.emitirError(e.getMessage());
+                return;
             }
-
-            Consola.emitirMensajeLN("Datos de prueba cargado correctamente");
-        } catch (RepositorioLlenoException e) {
-
         }
     }
 
@@ -408,7 +412,6 @@ public class AppIE {
                 
                 //verifica que no tengan una conexion
                 if(!gestorPInteres.existeConexion(p[0], p[1])){
-                    // cargar sendero
                     LectorSendero lector = new LectorSendero();
                     Sendero s = lector.cargar();
                     
@@ -452,10 +455,8 @@ public class AppIE {
                 p.mostrarInformacion();
             }
 
-        } catch (RepositorioVacioException e) {
+        } catch (RepositorioVacioException | DatoInvalidoException e) {
             Consola.emitirError(e.getMessage());
-        } catch (DatoInvalidoException d) {
-            Consola.emitirError(d.getMessage());
         }
     }
 
@@ -472,9 +473,9 @@ public class AppIE {
                 Consola.emitirError("No se encontro el punto de interes con el codigo '" + codigo + "'.");
             }
 
-        } catch (ArbolVacioExcepcion e) {
+        } catch (ArbolVacioExcepcion | DatoInvalidoException e) {
             Consola.emitirError(e.getMessage());
-        }
+        } 
     }
     
     private void existeCamino(){
@@ -490,9 +491,7 @@ public class AppIE {
                 Consola.emitirMensajeLN("No existe camino entre los dos punto de interes.");
             }
             
-        }catch(GrafoVacioException e){
-            Consola.emitirMensajeLN(e.getMessage());
-        }catch(ConexionAristaVaciaException e){
+        }catch(GrafoVacioException | ConexionAristaVaciaException e){
             Consola.emitirMensajeLN(e.getMessage());
         }
     }
@@ -532,9 +531,7 @@ public class AppIE {
             if(p != null){
                 gestorPInteres.mostrarPorPI(p);
             }
-        }catch(GrafoVacioException e){
-            Consola.emitirMensajeLN(e.getMessage());
-        }catch(ConexionAristaVaciaException e){
+        }catch(GrafoVacioException | ConexionAristaVaciaException e){
             Consola.emitirMensajeLN(e.getMessage());
         }
     }
@@ -557,7 +554,7 @@ public class AppIE {
             } else {
                 Consola.emitirError("No se encontro el punto de interes con el codigo '" + codigo + "'.");
             }
-        } catch (ArbolVacioExcepcion e) {
+        } catch (ArbolVacioExcepcion | DatoInvalidoException e) {
             Consola.emitirError(e.getMessage());
         }
     }
@@ -579,10 +576,8 @@ public class AppIE {
                 Consola.emitirMensajeLN("No se encontro un sendero entre estos dos punto de interes.");
             }
             
-        }catch (GrafoVacioException e) {
+        }catch (GrafoVacioException | ConexionAristaVaciaException e) {
             Consola.emitirError(e.getMessage());
-        }catch(ConexionAristaVaciaException e){
-            Consola.emitirMensajeLN(e.getMessage());
         }
     }
     
@@ -598,7 +593,7 @@ public class AppIE {
             int tipoPInte = mTipoPuntoInt.ejecutar();
 
             String stringTipoPInte = obtenerNombreTipo(tipoPInte);
-            int cantidad = gestorPInteres.CantPorTipo(stringTipoPInte);
+            int cantidad = gestorPInteres.cantPorTipo(stringTipoPInte);
             Consola.emitirResultado(40, "-", "Cantidad de tipo " + stringTipoPInte + ": " + cantidad);
 
         } catch (RepositorioVacioException e) {
@@ -622,15 +617,11 @@ public class AppIE {
     }
 
     private void mostrarPromedioAltitud() {
-        try {
-            Consola.emitirMensajeLN("");
-            Consola.emitirBordeLN(40, "-");
-            Consola.emitirMensajeLN("El promedio de altitud es: " + gestorPInteres.promedioAltitud());
-            Consola.emitirBordeLN(40, "-");
+        Consola.emitirMensajeLN("");
+        Consola.emitirBordeLN(40, "-");
+        Consola.emitirMensajeLN("El promedio de altitud es: " + gestorPInteres.promedioAltitud());
+        Consola.emitirBordeLN(40, "-");
 
-        } catch (RepositorioVacioException e) {
-            Consola.emitirError(e.getMessage());
-        }
     }
 
     private void mostrarAccesibilidadAlta() {
@@ -668,30 +659,40 @@ public class AppIE {
     private void recorridoDFS(){
         try {
             gestorPInteres.verificarGrafoVacio();
-            gestorPInteres.validarHayConexiones();
             
             PuntoInteres inicio = pedirPuntoPorCodigo();
-            gestorPInteres.recorridoDFS(inicio);
             
-        } catch (GrafoVacioException e) {
-            Consola.emitirMensajeLN(e.getMessage());
-        } catch (ConexionAristaVaciaException e){
-            Consola.emitirMensajeLN(e.getMessage());
+            if(inicio != null){
+                List<PuntoInteres> lista = gestorPInteres.recorridoDFS(inicio);
+                
+                for(PuntoInteres p : lista){
+                    p.mostrarInformacion();
+                    Consola.emitirMensajeLN("");
+                }
+            }
+            
+        } catch (GrafoVacioException e){
+            Consola.emitirError(e.getMessage());
         }
     }
     
     private void recorridoBFS(){
         try {
             gestorPInteres.verificarGrafoVacio();
-            gestorPInteres.validarHayConexiones();
             
             PuntoInteres inicio = pedirPuntoPorCodigo();
-            gestorPInteres.recorridoBFS(inicio);
             
-        } catch (GrafoVacioException e) {
-            Consola.emitirMensajeLN(e.getMessage());
-        } catch (ConexionAristaVaciaException e){
-            Consola.emitirMensajeLN(e.getMessage());
+            if(inicio != null){
+                List<PuntoInteres> lista = gestorPInteres.recorridoBFS(inicio);
+                
+                for(PuntoInteres p : lista){
+                    p.mostrarInformacion();
+                    Consola.emitirMensajeLN("");
+                }
+            }
+            
+        } catch (GrafoVacioException e){
+            Consola.emitirError(e.getMessage());
         }
     }
     
@@ -701,7 +702,6 @@ public class AppIE {
     // ================================================================================================================= //
     
     
-    // preguntar si es necesario que este metodo lance la excepcion
     private int leerCodigo() throws DatoInvalidoException {
         Consola.emitirBordeLN(40, "=");
         Consola.emitirMensajeLN("Ingrese codigo: ");

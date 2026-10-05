@@ -1,5 +1,7 @@
 package Utilidades;
 
+import java.util.List;
+
 public class Consola {
     public static void emitirResultado(int tamaño, String estilo, String msj){
         System.out.println("");

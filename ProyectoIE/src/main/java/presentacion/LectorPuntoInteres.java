@@ -21,8 +21,8 @@ public class LectorPuntoInteres {
         leerAltitud(p);
         leerNivelAcces(p);
     }
-//meotods de leer especificos llamando a los setters que ya aplican su verificacion 
-
+    
+    //meotods de leer especificos llamando a los setters que ya aplican su verificacion 
     private void leerNombre(PuntoInteres p) throws DatoInvalidoException {
         Consola.emitirMensajeLN("ingrese el nombre:");
         String nombre = Lector.leerString();

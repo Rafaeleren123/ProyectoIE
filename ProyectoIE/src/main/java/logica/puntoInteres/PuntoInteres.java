@@ -85,6 +85,27 @@ public abstract class PuntoInteres implements Comparable<PuntoInteres>{
         
         return -1;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PuntoInteres other = (PuntoInteres) obj;
+        return this.codigo == other.codigo;
+    }
     
   
     // ============================================= Getter ============================================= //
